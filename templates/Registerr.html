@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- link icon -->
+    <link rel="stylesheet" href="templates/Css/loginlogout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" integrity="sha512-ZnR2wlLbSbr8/c9AgLg3jQPAattCUImNsae6NHYnS9KrIwRdcY9DxFotXhNAKIKbAXlRnujIqUWoXXwqyFOeIQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Form</title>
+
+</head>
+<body>
+    <div class="container">
+        <div class="box">
+            <div class="form sign_up">
+                <h3>Sign Up</h3>
+                <span>or use your email for register</span>
+                <form action="#" id="form_input">
+                    <div class="type">
+                    <input type="text" name="" placeholder="Name" id="username" required>
+                    <div id="username-error" style="color: red;"></div>
+                    </div>
+                   <div class="type">
+                        <input type="password" name="" placeholder="Password" id="password" class="password-input" required>
+                        <span class="eye-icon" onclick="togglePasswordVisibility()" id="eyeIcon">&#128065;</span>
+                        <div id="password-error" style="color: red;"></div>
+                    </div>
+
+
+                    <div class="type" id="e">
+                        <input type="email" name="" placeholder="Email" id="email" required>
+                        <div id="email-error" style="color: red;"></div>
+                    </div>
+
+                    <button type="button" onclick="registerUser()" id="signup-btn">Sign Up</button>
+                </form>
+
+            </div>
+        </div>
+        <div class="overlay">
+            <div class="page page_signUp">
+                <h3>Hello Friend!</h3>
+                <p>Enter your personal details and start the journey with us</p>
+                <a href="/login" onclick="showSignIn()"><button class="btn btnSign-up">
+                    <i class="bi bi-arrow-left"></i> Sign In</button></a>
+            </div>
+        </div>
+    </div>
+<!--    <script src="templates/javascript/loginlogout.js"></script>-->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src = "templates/javascript/register.js"></script>
+    <script src="templates/javascript/loginlogout.js"></script>
+</body>
+</html>

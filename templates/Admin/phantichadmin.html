@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Website Dự Đoán Tiền Điện Nuớc</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Favicon -->
+<!--    <link href="img/favicon.ico" rel="icon">-->
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Ubuntu:wght@500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="templates/lib/animate/animate.min.css" rel="stylesheet">
+    <link href="templates/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="templates/Css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="templates/Css/style.css" rel="stylesheet">
+   <style>
+        h2{
+            margin-left: 30px;
+            padding: 10px;
+            text-align: center;
+        }
+        h3{
+            margin-left: 30px;
+            padding: 10px;
+            text-align: center;
+        }
+        .table{
+            border-spacing: 0;
+            margin: 1rem;
+            background-color: #f5f5f5;
+            width:60px;
+            margin-left: 30px;
+            padding:20px;
+        }
+        .center-table {
+            width: 50%; /* Đặt chiều rộng của bảng tùy ý */
+            margin: 0 auto; /* Căn giữa bảng */
+        }
+        .table__row:nth-child(even){
+            background-color: #e5e5e5;
+        }
+        .table__header{
+            text-align: center;
+        }
+
+        .table__cell{
+            padding: 8px;
+            text-align: center;
+        }
+        .navbar-nav {
+            display: flex;
+            align-items: center;
+        }
+
+        .welcome-text {
+            display: inline-block;
+            margin: 0;
+            color: white;
+        }
+
+        .nav-item.nav-link {
+            color: white;
+            text-decoration: none;
+            margin-left: 5px; /* Khoảng cách giữa "Welcome name" và "Đăng xuất" */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Spinner Start -->
+    <div id="spinner"
+        class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-grow text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+    <!-- Navbar Start -->
+    <div class="container-fluid sticky-top">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-dark p-0">
+                <a href="main.html" class="navbar-brand">
+                    <img src="templates/img/logo.jpg" width="50" height="50">
+                </a>
+                <button type="button" class="navbar-toggler ms-auto me-0" data-bs-toggle="collapse"
+                    data-bs-target="#navbarCollapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <div class="navbar-nav ms-auto">
+                        <a href="/" class="nav-item nav-link active">Trang chủ</a>
+                        <a href="/" class="nav-item nav-link">Về chúng tôi</a>
+                        <a href="/chatbox" class="nav-item nav-link">AI</a>
+                        <div class="navbar-nav ms-auto">
+                           <p class="welcome-text">Welcome, <span id="username" class="username-value"></span>! |</p>
+                            <a href="#" id="logout-link" class="nav-item nav-link">Đăng xuất</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+   <h2>Dự đoán tiền nước của bạn</h2>
+     <h3>Bảng thống kê hóa đơn của bạn</h3>
+      <table class="table center-table" id="myTable">
+        <tr class="table__header">
+            {% for heading in headings %}
+                <th class="table__cell">{{ heading }}</th>
+            {% endfor %}
+            <th></th>
+        </tr>
+        {% for row in data %}
+           <!-- Thêm cột mới để hiển thị giá trị dự đoán -->
+            <tr class="table__row" data-index="{{ row.ID }}" data-chi-so-cu="{{ row.chi_so_cu }}" data-username="{{ row.KH }}">
+                {% for value in row.values() %}
+                    <td class="table__cell">{{ value }}</td>
+                {% endfor %}
+                <td class="delete-btn">xóa</td>
+                <!-- Hiển thị giá trị dự đoán -->
+                <td class="table__cell">{{ row.predicted_consume }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <!-- Thêm input và button để nhập tên khách hàng -->
+    <input type="text" id="searchInput" placeholder="Nhập tên khách hàng">
+    <button onclick="searchCustomer()">Tìm kiếm</button>
+    <!-- Hiển thị kết quả dự đoán -->
+    <h4>Kết quả dự đoán cho tháng tiếp theo:</h4>
+   <!-- Thêm data-predicted-consume attribute cho phần tử p -->
+    <p id="predictedConsume">Chi phí: {{ predicted_consume }}</p>
+
+<script>
+    // Hàm này sẽ chạy khi trang web được tải
+    document.addEventListener('DOMContentLoaded', function () {
+        // Lấy giá trị dự đoán từ thẻ p có id là "predictedResult"
+        var predictedResultElement = document.getElementById('predictedResult');
+
+        // Kiểm tra xem có phần tử với id "predictedResult" không
+        if (predictedResultElement) {
+            // Lấy giá trị dự đoán từ attribute data-predicted-consume
+            var predictedConsume = predictedResultElement.getAttribute('data-predicted-consume');
+
+            // Kiểm tra xem giá trị dự đoán có tồn tại không
+            if (predictedConsume !== null) {
+                // Hiển thị giá trị dự đoán trong thẻ p
+                predictedResultElement.innerText = "Chi phí dự đoán: " + predictedConsume;
+            } else {
+                // Hiển thị thông báo nếu giá trị dự đoán không tồn tại
+                predictedResultElement.innerText = "No predicted cost available.";
+            }
+        }
+    });
+    function searchCustomer() {
+        // Lấy giá trị từ input
+        var searchInput = document.getElementById('searchInput').value.trim().toLowerCase();
+
+        // Duyệt qua từng dòng trong bảng
+        $("#myTable tbody tr").each(function () {
+            // Lấy giá trị từ cột "KH"
+            var rowUsername = $(this).find('td:eq(0)').text().trim().toLowerCase();
+
+            // Kiểm tra xem giá trị của cột "KH" có chứa tên khách hàng không
+            if (rowUsername.includes(searchInput)) {
+                // Hiển thị hàng khi có sự khớp
+                $(this).show();
+            } else {
+                // Ẩn hàng khi không có sự khớp
+                $(this).hide();
+            }
+        });
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+    var deleteButtons = document.querySelectorAll('.delete-btn');
+    deleteButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            var rowIndex = this.parentNode.getAttribute('data-index');
+            var chiSoCu = this.parentNode.getAttribute('data-chi-so-cu');
+            // Gửi yêu cầu xóa đến endpoint Flask với cả ID và chi_so_cu
+            fetch('/delete/' + rowIndex + '/' + chiSoCu, {
+                method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Xử lý phản hồi từ server, ví dụ: thông báo thành công hoặc hiển thị lỗi
+                alert(data.message || data.error);
+                // Nếu xóa thành công, cập nhật giao diện người dùng
+                if (!data.error) {
+                    var deletedIndex = data.id;
+                    var deletedRow = document.querySelector('[data-index="' + deletedIndex + '"]');
+                    if (deletedRow) {
+                        deletedRow.remove();
+                    }
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+});
+</script>
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-white-50 footer pt-5">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.1s">
+                    <a href="index.html" class="d-inline-block mb-3">
+                        <h1 class="text-white">AI<span class="text-primary">.</span>Tech</h1>
+                    </a>
+                    <p class="mb-0">Chào mừng đến với Website Dự Báo Tiền Điện Nước - nơi cung cấp thông tin chi tiết và dự báo chính xác về chi phí tiền điện và nước của bạn. Với sứ mệnh giúp người dùng hiểu rõ hơn về tiêu thụ năng lượng và nước, chúng tôi mang đến một trải nghiệm đơn giản và tiện lợi để quản lý và dự đoán chi phí hóa đơn hàng tháng của bạn.</p>
+                </div>
+                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.3s">
+                    <h5 class="text-white mb-4">Get In Touch</h5>
+                    <p><i class="fa fa-map-marker-alt me-3"></i>475A Điện Biên Phủ, P.25, Q.Bình Thạnh, TP.HCM</p>
+                    <p><i class="fa fa-phone-alt me-3"></i>078 345 67890</p>
+                    <p><i class="fa fa-envelope me-3"></i>phananh@gmail.com</p>
+                    <div class="d-flex pt-2">
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-instagram"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.5s">
+                    <h5 class="text-white mb-4">Popular Link</h5>
+                    <a class="btn btn-link" href="">About Us</a>
+                    <a class="btn btn-link" href="">Contact Us</a>
+                    <a class="btn btn-link" href="">Privacy Policy</a>
+                    <a class="btn btn-link" href="">Terms & Condition</a>
+                    <a class="btn btn-link" href="">Career</a>
+                </div>
+                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.7s">
+                    <h5 class="text-white mb-4">Our Services</h5>
+                    <a class="btn btn-link" href="">Robotic Automation</a>
+                    <a class="btn btn-link" href="">Machine learning</a>
+                    <a class="btn btn-link" href="">Predictive Analysis</a>
+                    <a class="btn btn-link" href="">Data Science</a>
+                    <a class="btn btn-link" href="">Robot Technology</a>
+                </div>
+            </div>
+        </div>
+        <div class="container wow fadeIn" data-wow-delay="0.1s">
+            <div class="copyright">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        &copy; <a class="border-bottom" href="#">TA</a>, AI thực hiện</a>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <div class="footer-menu">
+                            <a href="">Home</a>
+                            <a href="">Cookies</a>
+                            <a href="">Help</a>
+                            <a href="">FAQs</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top pt-2"><i class="bi bi-arrow-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="templates/lib/wow/wow.min.js"></script>
+    <script src="templates/lib/easing/easing.min.js"></script>
+    <script src="templates/lib/waypoints/waypoints.min.js"></script>
+    <script src="templates/lib/counterup/counterup.min.js"></script>
+    <script src="templates/lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="templates/Admin/js/main.js"></script>
+    <script src="templates/Admin/js/phantich.js"></script>
+</body>
+
+</html>

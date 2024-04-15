@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- link icon -->
+   <link rel="stylesheet" href="templates/Css/loginlogout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" integrity="sha512-ZnR2wlLbSbr8/c9AgLg3jQPAattCUImNsae6NHYnS9KrIwRdcY9DxFotXhNAKIKbAXlRnujIqUWoXXwqyFOeIQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Form</title>
+
+</head>
+<body>
+    <div class="container">
+        <div class="box">
+            <div class="form sign_in">
+                <h3>Sign In</h3>
+                <span>or use your account</span>
+                <form action="/admin_login" method="post" id="form_input">
+                    <div class="type">
+                        <input type="text" name="username" placeholder="Name" id="username" required>
+                        <div id="username-error" style="color: red;"></div>
+                    </div>
+                     <div class="type">
+                        <input type="password" name="" placeholder="Password" id="password" class="password-input" required>
+                        <span class="eye-icon" onclick="togglePasswordVisibility()" id="eyeIcon">&#128065;</span>
+                        <div id="password-error" style="color: red;"></div>
+                    </div>
+                    <button type="button" onclick="loginUserAsync()" id="signin-btn">Sign In</button>
+                    <p id="error-message" style="color: red;"></p>
+                   <a href="javascript:void(0);" onclick="showResetPassword()">Quên mật khẩu?</a>
+                    <!-- Reset Password Form -->
+                    <div id="reset-password-form" style="display: none;">
+                        <input type="email" name="email" placeholder="Email" id="resetEmail" required>
+                        <button type="button" onclick="forgotPassword()">Reset Password</button>
+                    </div>
+
+                    <!-- Change Password Form -->
+                    <div id="change-password-form" style="display: none;">
+                        <input type="email" name="email" placeholder="Email" id="changeEmail" required>
+                        <input type="password" name="new_password" placeholder="New Password" id="newPassword" required>
+                        <button type="button" onclick="changePassword()">Change Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="overlay">
+            <div class="page page_signIn">
+                <h3>Welcome to Admin!</h3>
+            </div>
+        </div>
+    </div>
+    <!-- Uncomment the following line if you want to use Axios -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script -->
+     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+   async function loginUserAsync() {
+        const name = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        var errorMessageElement = document.getElementById('error-message');
+        // Xóa thông báo lỗi trước khi kiểm tra lại
+        errorMessageElement.innerHTML = '';
+        document.getElementById('username-error').innerText = "";
+        document.getElementById('password-error').innerText = "";
+        if (name.trim() === "") {
+            document.getElementById('username-error').innerText = "Vui lòng nhập tên đăng nhập.";
+            return;
+        }
+        if (password.trim() === "") {
+            document.getElementById('password-error').innerText = "Vui lòng nhập mật khẩu đăng nhập.";
+            return;
+        }
+        // Add this before the fetch call
+        console.log('Sending request to server:', name, password);
+       try {
+        const response = await fetch('/admin_login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                'name': name,
+                'password': password,
+            }),
+        });
+
+        if (response.ok) {
+            try {
+                const contentType = response.headers.get('content-type');
+
+                if (contentType && contentType.includes('application/json')) {
+                    const data = await response.json();
+                    // Handle the response data as needed
+                    console.log(data);
+
+                    if (data.message === 'Admin login successful' && name === 'admin' && password === 'Anh@123456') {
+                        // Handle successful login
+                        window.location.href = '/admin';
+                    } else {
+                        // Handle unsuccessful login
+                        console.log('Login unsuccessful');
+                        document.getElementById('error-message').innerText = "Sai thông tin đăng nhập";
+                    }
+                } else {
+                    // Handle non-JSON response
+                    console.log('Non-JSON response:', response);
+                    document.getElementById('error-message').innerText = "Server response is not in JSON format";
+                }
+            } catch (error) {
+                // Handle inner try block error
+                console.error('Inner try block error:', error);
+                document.getElementById('error-message').innerText = "Error parsing JSON response";
+            }
+        } else {
+            // Handle non-successful response
+            console.log('Error:', response.statusText);
+            document.getElementById('error-message').innerText = "Đã xảy ra lỗi trong quá trình đăng nhập";
+        }
+    } catch (error) {
+        // Handle outer try block error
+        console.error('Outer try block error:', error);
+        document.getElementById('error-message').innerText = "Outer try block error";
+    }
+}
+
+function togglePasswordVisibility() {
+    var passwordInput = document.getElementById("password");
+    var eyeIcon = document.getElementById("eyeIcon");
+
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        eyeIcon.innerHTML = "&#128064;"; // Biểu tượng mắt đóng
+    } else {
+        passwordInput.type = "password";
+        eyeIcon.innerHTML = "&#128065;"; // Biểu tượng mắt mở
+    }
+}
+ function showResetPassword() {
+    document.getElementById('reset-password-form').style.display = 'block';
+    document.getElementById('change-password-form').style.display = 'none';
+}
+
+function showChangePassword() {
+    document.getElementById('reset-password-form').style.display = 'none';
+    document.getElementById('change-password-form').style.display = 'block';
+}
+
+function forgotPassword() {
+    const email = document.getElementById('resetEmail').value;
+
+    fetch('/forgot-password', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `email=${email}`,
+    })
+    .then(response => response.text())
+    .then(html => {
+        // Display the response HTML (reset_password.html)
+        document.getElementById('form_input').innerHTML = html;
+        // Additionally, show the change password form
+        showChangePassword();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+function changePassword() {
+    const email = document.getElementById('changeEmail').value;
+    const newPassword = document.getElementById('newPassword').value;
+
+    fetch('/change-password', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `email=${email}&new_password=${newPassword}`,
+    })
+    .then(response => response.text())
+    .then(html => {
+        // Display the response HTML (success or failure message)
+        document.getElementById('form_input').innerHTML = html;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+</script>
+    <script src="templates/Admin/js/loginlogout.js"></script>
+</body>
+</html>

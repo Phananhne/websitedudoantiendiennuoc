@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dasboard</title>
+
+    <script src="https://kit.fontawesome.com/a158846fdc.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="templates/Admin/style.css">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+</head>
+<body>
+
+    <section id="menu">
+        <div class="logo">
+            <img src="templates/Admin/Res/images/logo.png" alt="">
+            <h2>Dynamic</h2>
+
+        </div>
+
+        <div class="items">
+            <div id="maker"></div>
+            <li><i class="fa-solid fa-users"></i><a href="#" data-target="users">User</a></li>
+            <li><i class="fa-solid fa-chart-pie"></i><a href="#" data-target="bills">Bills</a></li>
+            <li><i class="fa-solid fa-chart-column"></i><a href="#"data-target="blanks">Blank</a></li>
+        </div>
+    </section>
+
+    <section id="interface">
+        <div class="navigation">
+            <div class="n1">
+
+                <div>
+                    <i id="menu-btn" class="fa-solid fa-bars"></i>
+                </div>
+
+                <div class="search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search">
+                </div>
+            </div>
+            <div class="profile">
+                <i class="fa-regular fa-bell"></i>
+                <img src="/templates/Admin/Res/images/avata.png" alt="">
+            </div>
+        </div>
+        <h3 class="i-name">
+            Dashboard
+        </h3>
+       <div class="values">
+        <div class="val-box" id="totalUser">
+            <i class="fa-solid fa-users"></i>
+            <div>
+               <h3 id="totalUsers">{{ total_user }}</h3>
+                <span>Total User</span>
+            </div>
+        </div>
+        <div class="val-box" id="totalOrders">
+            <i class="fa-solid fa-filter"></i>
+            <div>
+                <h3 id="totalOrder">{{ total_order }}</h3>
+                <span>Total bills</span>
+            </div>
+        </div>
+
+        <div class="val-box" id="totalData">
+            <i class="fa-solid fa-database"></i>
+            <div>
+                <h3 id="totaldatas">{{ total_order }}</h3>
+                <span>Total Data</span>
+            </div>
+        </div>
+
+        <div class="val-box" id="thisMonth">
+            <i class="fa-solid fa-star"></i>
+            <div>
+                <h3 id="currentMonth"></h3>
+                <span>This Month</span>
+            </div>
+        </div>
+    </div>
+            <!-- Include your JavaScript file -->
+    <script src="templates/Admin/js/script.js"></script>
+     <!-- Tao bang danh sach -->
+        <ul class="board">
+            <table id="users" width="100%">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">STT</th>
+                    <th onclick="sortTable(1)">Name</th>
+                    <th onclick="sortTable(2)">Password</th>
+                    <th onclick="sortTable(3)">Email</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+             <tbody id="userDetails">
+                {% for user in list_user %}
+                <tr data-user-stt="{{ user.STT }}">
+                    <td class="stt">
+                        <p>{{ user.STT }}</p>
+
+                    </td>
+                    <td class="name">
+                        <p>{{ user.Name }}</p>
+                    </td>
+                    <td class="password">
+                        <p>{{ user.Password }}</p>
+                    </td>
+                    <td class="email">
+                        <p>{{ user.Email }}</p>
+                    </td>
+                    <td class="edit">
+                        <a href="#" id="updateButton">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+                <!-- Form for editing user -->
+
+        </table>
+
+            <table id="bills" width="100%">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)">KH</th>
+                        <th onclick="sortTable(1)">DC</th>
+                        <th onclick="sortTable(2)">ID</th>
+                        <th onclick="sortTable(3)">Chỉ số cũ</th>
+                        <th onclick="sortTable(4)">Chỉ số mới</th>
+                        <th onclick="sortTable(5)">KL tiêu thụ</th>
+                        <th onclick="sortTable(6)">Tiền nước</th>
+                        <th onclick="sortTable(7)">Tổng cộng</th>
+                        <th onclick="sortTable(8)">Kỳ tháng</th>
+                        <th onclick="sortTable(9)">Năm</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for bill in list_bill %}
+                    <tr data-index="{{ bill.ID }}" data-chi-so-cu="{{ bill.chi_so_cu }}">
+                        <td class="KH">
+                            <p>{{ bill.KH }}</p>
+                        </td>
+
+                        <td class="DC">
+                            <p>{{ bill.DC }}</p>
+                        </td>
+
+                        <td class="ID" >
+                            <p>{{ bill.ID }}</p>
+                        </td>
+
+                        <td class="chisocu">
+                            <p>{{ bill.chi_so_cu }}</p>
+                        </td>
+                        <td class="chisomoi">
+                            <p>{{ bill.chi_so_moi}}</p>
+                        </td>
+                        <td class="kltieuthu">
+                            <p>{{ bill.KL_tieu_thu }}</p>
+                        </td>
+                        <td class="tiennuoc">
+                            <p>{{ bill.tien_nuoc }}</p>
+                        </td>
+                        <td class="tongcong">
+                            <p>{{ bill.tong_cong }}</p>
+                        </td>
+                        <td class="kythang">
+                            <p>{{ bill.ky_thang}}</p>
+                        </td>
+                        <td class="nam">
+                            <p>{{ bill.nam}}</p>
+                        </td>
+                        <td class="delete">
+                            <a class="delete-btn" href="#">Delete</a>
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <table id="blanks" width="100%">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)">STT</th>
+                        <th onclick="sortTable(1)">Name</th>
+                        <th onclick="sortTable(2)">Password</th>
+                        <th onclick="sortTable(3)">Email</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in list_user %}
+                    <tr data-user-id="{{ user.ID }}">
+                        <td class="stt">
+                            <p>{{ user.STT }}</p>
+                        </td>
+
+                        <td class="name">
+                            <p>{{ user.Name }}</p>
+                        </td>
+
+                        <td class="password">
+                            <p>{{ user.Password }}</p>
+                        </td>
+
+                        <td class="email">
+                            <p>{{ user.Email }}</p>
+                        </td>
+                        <td class="edit">
+                            <a href="/read_data" >Phân tích</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+        </table>
+        </ul>
+
+</Section>
+    <!-- Add jQuery library if not already included -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</body>
+</html>
